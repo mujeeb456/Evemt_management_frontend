@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import axiosInstance from "./axiosInstance";
+import { useParams, useHistory } from "react-router-dom";
+import axios from "axios";
 
 const EventDetails = () => {
   const { id } = useParams();
+  const history = useHistory();
   const [event, setEvent] = useState(null);
 
   useEffect(() => {
-    axiosInstance
-      .get(`/events/${id}`) // Use axiosInstance instead of axios
+    axios
+      .get(`http://localhost:3000/api/events/${id}`)
       .then((response) => setEvent(response.data))
       .catch((error) => console.error(error));
   }, [id]);
+
+  const handleDelete = () => {
+    axios
+      .delete(
+        `https://event-management-platform-5xzd.onrender.com/api/events/${id}`
+      )
+      .then(() => {
+        alert("Event deleted successfully");
+        history.push("/events"); // Redirect to the events list page
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Failed to delete event");
+      });
+  };
 
   if (!event)
     return (
@@ -47,6 +63,20 @@ const EventDetails = () => {
         ) : (
           <p className="text-gray-600">No attendees</p>
         )}
+      </div>
+      <div className="mt-6 flex justify-end space-x-4">
+        <button
+          onClick={() => history.push(`/events/${id}/edit`)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+        >
+          Edit Event
+        </button>
+        <button
+          onClick={handleDelete}
+          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
+        >
+          Delete Event
+        </button>
       </div>
     </div>
   );

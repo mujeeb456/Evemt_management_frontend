@@ -10,9 +10,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
-  background: #36D1DC; 
-  background: -webkit-linear-gradient(to right, #5B86E5, #36D1DC);  
-  background: linear-gradient(to right, #5B86E5, #36D1DC);
+  background: white;
 }
 
 code {
