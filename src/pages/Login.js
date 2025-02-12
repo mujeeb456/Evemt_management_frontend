@@ -6,29 +6,36 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     try {
       const response = await axios.post(
         "https://event-management-platform-5xzd.onrender.com/api/auth/login",
-        {
-          email,
-          password,
-        }
+        { email, password }
       );
 
       localStorage.setItem("token", response.data.token);
       navigate("/events");
     } catch (error) {
       setError("Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="relative flex items-center justify-center min-h-screen bg-gray-100">
       <div className="p-6 max-w-md w-full bg-white shadow-md rounded-lg">
+        {loading && (
+          <div className="absolute top-0 left-0 w-full bg-blue-600 text-white p-2 text-center rounded-t-lg">
+            Logging in...
+          </div>
+        )}
         <h1 className="text-2xl font-bold mb-4 text-center">Login</h1>
         {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleLogin} className="space-y-4">
@@ -38,6 +45,7 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-2 border rounded"
+            disabled={loading}
           />
           <input
             type="password"
@@ -45,12 +53,18 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 border rounded"
+            disabled={loading}
           />
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded"
+            disabled={loading}
+            className={`w-full p-2 rounded ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 text-white"
+            }`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className="mt-4 text-center">

@@ -7,29 +7,34 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     try {
       await axios.post(
         "https://event-management-platform-5xzd.onrender.com/api/auth/register",
-        {
-          name,
-          email,
-          password,
-        }
+        { name, email, password }
       );
-
       navigate("/");
     } catch (error) {
       setError("Failed to sign up. Try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="relative flex items-center justify-center min-h-screen bg-gray-100">
       <div className="p-6 max-w-md w-full bg-white shadow-md rounded-lg">
+        {loading && (
+          <div className="absolute top-0 left-0 w-full bg-green-600 text-white p-2 text-center rounded-t-lg">
+            Signing up...
+          </div>
+        )}
         <h1 className="text-2xl font-bold mb-4 text-center">Sign Up</h1>
         {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleSignup} className="space-y-4">
@@ -39,6 +44,7 @@ const Signup = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full p-2 border rounded"
+            disabled={loading}
           />
           <input
             type="email"
@@ -46,6 +52,7 @@ const Signup = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-2 border rounded"
+            disabled={loading}
           />
           <input
             type="password"
@@ -53,12 +60,18 @@ const Signup = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 border rounded"
+            disabled={loading}
           />
           <button
             type="submit"
-            className="w-full bg-green-600 text-white p-2 rounded"
+            disabled={loading}
+            className={`w-full p-2 rounded ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 text-white"
+            }`}
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
         <p className="mt-4 text-center">
